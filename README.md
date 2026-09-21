@@ -88,16 +88,16 @@ Source: admin_withdrawal_deadline.txt (also mentioned in admin_add_drop_deadline
 
 | Question | In corpus? | Best distance |
 |---|---|---|
-| 1 | Y | 0.3027 |
-| 2 | Y | 0.3208 |
-| 3 | Y | 0.2489 |
-| 4 | Y | 0.2166 |
-| 5 | Y | 0.1562 |
-| 1 | N | 0.8246 |
-| 2 | N | 0.9340 |
-| 3 | N | 0.8859 |
-| 4 | N | 0.8442 |
-| 5 | N | 0.8960 |
+| What is the deadline for a student to drop a course? | Y | 0.3027 |
+| How much of a printing quota does a student have each semester? | Y | 0.3208 |
+| How many hours per week can a student book a study room? | Y | 0.2489 |
+| How much does it cost to wash and dry my clothes at the old brewhouse building? | Y | 0.2166 |
+| How long after a grade is posted does a student have time to appeal? | Y | 0.1562 |
+| What is the capital of Mongolia? | N | 0.8246 |
+| How do I change the oil in a diesel engine? | N | 0.9340 |
+| Who won the 1994 World Cup? | N | 0.8859 |
+| What is the recommended dosage of ibuprofen for a headache? | N | 0.8442 |
+| How do I write a for loop in Rust? | N | 0.8960 |
 
 ## How I Used AI
 
