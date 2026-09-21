@@ -1,19 +1,6 @@
 # The Unofficial Guide
 
-<!-- Replace this line with your name and which corpus you picked. -->
-
-> **This file is your submission.** Fill it in as you go — most sections get
-> written during the milestone that produces them, not at the end.
->
-> How the starter works, and every command you'll need, is in `RUNNING.md`.
-> Leave that file alone.
->
-> **Paste everything as text.** No screenshots, no video. A typed table gets
-> full credit; a picture of the same table gets none.
->
-> Delete these instruction blocks as you replace them. The `<!-- -->` comments
-> are notes to you and don't show up when the page renders — you can leave them
-> or remove them.
+Yosias Redi campus_life
 
 ---
 
@@ -21,37 +8,17 @@
 
 ## What This Does
 
-<!-- Three or four sentences. Which corpus you picked, and the kinds of
-     questions your system answers. Write it for someone who has never seen
-     this repo.
-
-     Milestone 5. -->
+This project uses the campus_life corpus, which contains short posts about student experiences and campus life. The system is designed to answer questions about student activities, experiences, and opinions about campus. Because the documents are relatively short and contain focused pieces of information, the retrieval system works well with smaller, focused chunks.
 
 ## Chunking Strategy
 
 **Chunk size:**
+A 400-character chunk works well for this corpus because the documents are mostly short posts with relatively concise pieces of information. It keeps related information together while making the retrieved chunks focused and easy to read.
 **Overlap:**
-
-<!-- What about YOUR documents made you pick these numbers? Short posts and
-     long sectioned guides don't want the same chunking, and "800 seemed
-     reasonable" earns nothing. Point at something you noticed when you read
-     the documents in Milestone 1.
-
-     If you changed your mind partway through, say so and say why. That's worth
-     more than pretending you got it right first time.
-
-     Milestone 3. -->
+I chose an overlap of 0 because the corpus consists mostly of short, self-contained posts and paragraphs. Keeping paragraphs intact without repeating text between chunks reduces redundancy while still preserving the main ideas.
 
 ## Sample Chunks
 
-<!-- Five chunks, pasted as text. Label each one and name the file it came from
-     AND the function that produced it — the grader checks your code against
-     what you claim here.
-
-     `python app.py chunks -n 5` prints all three for you. Copy them straight
-     across.
-
-     Milestone 3. -->
 
 **Chunk 1** — source: `admin_add_drop_deadline.txt#0 ` — produced by: `chunker.py::split_documents`
 
@@ -106,50 +73,39 @@ The bad: known damp problem on the ground floor; two rooms were taken offline in
 
 ## Sample Answer
 
-<!-- One complete question and answer, pasted as text, with the source line
-     visible. Milestone 4. -->
-
 **Question:**
-
+What is the deadline for a student to drop a course?
 **Answer:**
 
 ```
+The deadline to drop a course is through the end of week six. 
+
+Source: admin_withdrawal_deadline.txt (also mentioned in admin_add_drop_deadline.txt)
 ```
 
 **My relevance cutoff:**
-
-<!-- The number you set in config.py, and how you got there.
-
-     You ran five questions your corpus covers and the five in OUT_OF_SCOPE
-     that it clearly doesn't, and wrote down the best distance for each. What
-     did those two groups look like? Where was the gap? Put the actual numbers
-     here — the table below wants all ten rows.
-
-     Milestone 4. -->
+.55, The in corpus questions had a best distance averaging around just below .3, while out of corpus had best distance averaging just over .8. Halfway between .8 and .3 is .55.
 
 | Question | In corpus? | Best distance |
 |---|---|---|
-|  |  |  |
+| 1 | Y | 0.3027 |
+| 2 | Y | 0.3208 |
+| 3 | Y | 0.2489 |
+| 4 | Y | 0.2166 |
+| 5 | Y | 0.1562 |
+| 1 | N | 0.8246 |
+| 2 | N | 0.9340 |
+| 3 | N | 0.8859 |
+| 4 | N | 0.8442 |
+| 5 | N | 0.8960 |
 
 ## How I Used AI
 
-<!-- Two specific moments. For each: what you asked for, what came back, and
-     what you changed about it.
-
-     "I asked Claude to write the chunking function from my notes. It ignored
-     the overlap, so I added that myself" is the level of detail we're after.
-     "I used AI to help me code" is not.
-
-     Milestone 5. -->
-
 **1.**
+I used AI to help write the chunking functon from my notes, it ruined the current chunker i have written in split_documents but I ignored the 50 character overlap it suggested to me.
 
 **2.**
-
-<!-- ── Stretch features ─────────────────────────────────────────────────────
-     Doing one? Say so here BEFORE you start. A feature this README never
-     claims earns nothing.
-     ───────────────────────────────────────────────────────────────────────── -->
+I asked AI to help me come up with a testable creative criteria.
 
 ---
 
