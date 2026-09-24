@@ -129,15 +129,137 @@ I asked AI to help me come up with a testable creative criteria.
 
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
+| 1. Retrieved chunk contains the answer | 4 of 5 | 3/5 | 3/5 | 3/5 | MISSED |
+| 2. Every answer names a source | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 3. Gate stops out-of-corpus questions | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 4. No chunk is over 400 characters | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 5. Each response takes under 5 seconds | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
 
 <!-- Underneath, paste the REAL output for each criterion from one of your
      runs — the actual text your system produced, not a description of it.
      Name the file and function that produced it. -->
+
+All five questions, run 1, from `results/run_2026-09-23_2053.md`.
+
+### Criterion 1 — Retrieved chunk contains the answer — 3/5
+
+`chunker.py::split_documents` → `store.py::search` → `scorer.py::judge`
+
+```
+admin_add_drop_deadline.txt, distance 0.303, expects 'week six' -> pass
+
+On the add/drop deadline
+
+You can add a course through the end of the second week. Dropping is a longer window — through the end of week six — but a drop after week two shows as a W on your transcript. Nothing anywhere on the registrar's site says this plainly, and students find out from each other.
+```
+
+```
+admin_printing_quota.txt, distance 0.321, expects '$30' -> pass
+
+On the printing quota
+
+Every student gets $30 of printing per semester, which is roughly 600 black-and-white pages. It does not roll over. Colour costs eight times as much per page, which people discover after printing one poster.
+```
+
+```
+study_group_rooms.txt, distance 0.250, expects 'four hours' -> fail
+
+Booking a group study room
+
+Rooms book two weeks ahead through the library site, in two-hour blocks, maximum two blocks per person per week. The limit is per person, so a group of four can chain together eight hours if they coordinate.
+
+Rooms 210 and 211 have whiteboards that actually erase. The others don't and no amount of scrubbing helps.
+```
+
+```
+housing_old_brewhouse_laundry.txt, distance 0.225, expects '$3.00' -> fail
+
+Laundry in Old Brewhouse
+
+Machines take $1.50 wash, $1.50 dry, coin only, and the machines are old. There are eight washers and six dryers for the building, which is the wrong ratio and means the dryers back up on Sunday evenings.
+
+Best time to do laundry here is Tuesday or Wednesday morning. Sunday after 6pm you will wait.
+```
+
+```
+admin_grade_appeals.txt, distance 0.156, expects 'fifteen' -> pass
+
+On the grade appeals
+
+A grade appeal starts with the instructor and has to be raised within fifteen days of the grade posting. Only after that does it go to the department. Skipping the instructor step gets the appeal returned, which wastes most of the fifteen days.
+```
+
+### Criterion 2 — Every answer names a source — 5/5
+
+`generate.py::answer_from_chunks`
+
+```
+Based on the documents, the deadline for dropping a course is through the end of week six. (Source: admin_add_drop_deadline.txt and admin_withdrawal_deadline.txt)
+```
+
+```
+Every student gets $30 of printing per semester, which is roughly 600 black-and-white pages (admin_printing_quota.txt).
+```
+
+```
+A person can book a maximum of two blocks (two hours each, for a total of four hours) per week. A group of four people can coordinate to book up to eight hours total.
+
+Source: study_group_rooms.txt
+```
+
+```
+It costs $1.50 to wash and $1.50 to dry, making a total of $3.00 at the old brewhouse building.
+
+Source: `housing_old_brewhouse.txt` (also mentioned in `housing_old_brewhouse_laundry.txt`)
+```
+
+```
+A student has fifteen days from the time the grade is posted to raise a grade appeal (admin_grade_appeals.txt).
+```
+
+### Criterion 3 — Gate stops out-of-corpus questions — 5/5
+
+`run_eval.py::check_out_of_scope` → `gate.py::check`, cutoff 0.55
+
+| Out-of-scope question | Best distance | Gate |
+|---|---|---|
+| What is the capital of Mongolia? | 0.825 | refused |
+| How do I change the oil in a diesel engine? | 0.934 | refused |
+| Who won the 1994 World Cup? | 0.886 | refused |
+| What is the recommended dosage of ibuprofen for a headache? | 0.844 | refused |
+| How do I write a for loop in Rust? | 0.891 | refused |
+
+```
+I don't have enough information about that.
+```
+
+### Criterion 4 — No chunk is over 400 characters — 5/5
+
+`chunker.py::split_documents` → `chunker.py::describe`
+
+```
+100 chunks, 278 characters on average (shortest 94, longest 400), produced by chunker.py::split_documents
+chunks over 400 characters: 0
+```
+
+### Criterion 5 — Each response takes under 5 seconds — 5/5
+
+`run_eval.py::main` → `run_eval.py::run_once`
+
+What is the deadline for a student to drop a course?
+  run 1: pass  2.31s  (best distance 0.303)
+
+How much of a printing quota does a student have each semester?
+  run 1: pass  0.69s  (best distance 0.321)
+
+How many total hours per week can a student book a study room?
+  run 1: fail  0.80s  (best distance 0.250)
+
+How much does it cost in total to wash and dry my clothes at the old brewhouse building?
+  run 1: fail  0.75s  (best distance 0.225)
+
+How long after a grade is posted does a student have time to appeal?
+  run 1: pass  0.79s  (best distance 0.156)
 
 ## Verdicts
 

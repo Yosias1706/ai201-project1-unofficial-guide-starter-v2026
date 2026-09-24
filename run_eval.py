@@ -35,6 +35,7 @@ you a scorer; you'd learn nothing from it.
 import argparse
 import datetime as dt
 import sys
+import time
 from pathlib import Path
 
 import config
@@ -101,6 +102,9 @@ def main():
 
     transcript = []
     rows = []
+    # One list per run, holding each question's per-criterion scores. This is
+    # what the criterion table counts up.
+    per_run = [[] for _ in range(args.runs)]
 
     for item in items:
         question = item["question"]
@@ -109,14 +113,22 @@ def main():
 
         run_results = []
         for run in range(1, args.runs + 1):
+            started = time.perf_counter()
             answer, results, decision = run_once(
                 question, top_k, threshold, corpus, args.variant
             )
-            passed = judge(question, expects, answer, results) if judge else None
+            elapsed = time.perf_counter() - started
+
+            scores = judge(question, expects, answer, results) if judge else {}
+            scores[5] = elapsed < 5.0
+            per_run[run - 1].append(scores)
+
+            passed = all(scores.values()) if judge else None
             run_results.append(passed)
 
             mark = {True: "pass", False: "fail", None: "—"}[passed]
-            print(f"  run {run}: {mark}  (best distance {decision.best_distance:.3f})")
+            print(f"  run {run}: {mark}  {elapsed:.2f}s  "
+                  f"(best distance {decision.best_distance:.3f})")
 
             transcript.append(
                 {
@@ -134,7 +146,7 @@ def main():
     gate_rows = check_out_of_scope(top_k, threshold, corpus, args.variant)
 
     write_report(
-        rows, transcript, gate_rows, args, corpus, top_k, threshold,
+        rows, transcript, gate_rows, per_run, args, corpus, top_k, threshold,
         scored=judge is not None,
     )
 
@@ -176,15 +188,46 @@ def check_out_of_scope(top_k, threshold, corpus, variant):
     return rows
 
 
-def write_report(rows, transcript, gate_rows, args, corpus, top_k, threshold, scored):
+def criterion_table(per_run, gate_rows, n):
+    """One row per criterion — the table the README asks for.
+
+    Criterion 3 is measured in one deterministic pass rather than three, so its
+    single number goes in every run column.
+    """
+    runs = len(per_run)
+    refused = sum(r["refused"] for r in gate_rows)
+
+    def hits(c):
+        return [sum(1 for s in run if s.get(c)) for run in per_run]
+
+    rows = [
+        ("1. Retrieved chunk contains the answer", 4, n, hits(1)),
+        ("2. Every answer names a source", n, n, hits(2)),
+        ("3. Gate stops out-of-corpus questions", 4, len(gate_rows), [refused] * runs),
+        ("4. No chunk is over 400 characters", n, n, hits(4)),
+        ("5. Each response takes under 5 seconds", n, n, hits(5)),
+    ]
+
+    lines = [
+        "| Criterion | Target | "
+        + " | ".join(f"Run {i}" for i in range(1, runs + 1))
+        + " | Verdict |",
+        "|---|---|" + "|".join(["---"] * runs) + "|---|",
+    ]
+    for name, target, out_of, counts in rows:
+        cells = " | ".join(f"{c}/{out_of}" for c in counts)
+        verdict = "MET" if all(c >= target for c in counts) else "MISSED"
+        lines.append(f"| {name} | {target} of {out_of} | {cells} | {verdict} |")
+    return lines
+
+
+def write_report(rows, transcript, gate_rows, per_run, args, corpus, top_k, threshold, scored):
     config.RESULTS_DIR.mkdir(exist_ok=True)
     stamp = dt.datetime.now().strftime("%Y-%m-%d_%H%M")
     label = f"_{args.label}" if args.label else ""
     path = config.RESULTS_DIR / f"run_{stamp}{label}.md"
 
     n = len(rows[0]["runs"]) if rows else 0
-    run_headers = " | ".join(f"Run {i}" for i in range(1, n + 1))
-    run_divider = "|".join(["---"] * n)
 
     lines = [
         f"# Run log{f' — {args.label}' if args.label else ''}",
@@ -196,20 +239,12 @@ def write_report(rows, transcript, gate_rows, args, corpus, top_k, threshold, sc
         f"- Runs per question: {n}, caching off",
         f"- When: {dt.datetime.now().strftime('%Y-%m-%d %H:%M')}",
         "",
-        "This table is one row per QUESTION. The run log your README asks for is",
-        "one row per CRITERION, so aggregate these into it — criterion 1 is how many",
-        "of your questions had the answer in the retrieved chunks, and so on.",
+        "One row per criterion, targets from `criteria.md`. Criterion 3 is measured",
+        "in one deterministic pass rather than three, so the same number goes in",
+        "every run column.",
         "",
-        f"| Question | {run_headers} |",
-        f"|---|{run_divider}|",
+        *criterion_table(per_run, gate_rows, len(rows)),
     ]
-
-    for row in rows:
-        cells = []
-        for passed in row["runs"]:
-            cells.append({True: "pass", False: "fail", None: " "}[passed])
-        question = row["question"].replace("|", "\\|")
-        lines.append(f"| {question} | {' | '.join(cells)} |")
 
     if not scored:
         lines += [
