@@ -299,6 +299,7 @@ How long after a grade is posted does a student have time to appeal?
      low, and which one you'd tighten and to what.
 
      Milestone 3. -->
+     The only miss was in criteria 1, retrieve chunk contains the answer. This is not because of any of the stages of the system but rather a measurement problem. The system looks for literal substrings of the answer in the problem, but this doesn't work for chunks that hold the values needed for arithmetic. For example theres a question about the total cost of washing and drying clothes, and the chunk explains that its $1.50 to wash and $1.50 to dry which gives the model enough information to answer the total cost is $3.00 but doesnt containt the literal substring $3.00 in the chunk even though the knowledge to calculate that for the answer was there. The same two questions failed this criteria, and they were both questions requiring arithmetic.
 
 ## The Improvement
 
