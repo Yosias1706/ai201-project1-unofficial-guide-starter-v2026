@@ -25,7 +25,7 @@ QUESTIONS = [
     # {"question": "...", "expects": "..."},
     {"question": "What is the deadline for a student to drop a course?", "expects": "week six"},
     {"question": "How much of a printing quota does a student have each semester?", "expects": "$30"},
-    {"question": "How many hours per week can a student book a study room?", "expects": "four hours"},
+    {"question": "How many total hours per week can a student book a study room?", "expects": "four hours"},
     {"question": "How much does it cost in total to wash and dry my clothes at the old brewhouse building?", "expects": "$3.00"},
     {"question": "How long after a grade is posted does a student have time to appeal?", "expects": "fifteen"},
 ]
