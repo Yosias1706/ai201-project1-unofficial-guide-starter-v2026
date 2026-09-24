@@ -274,11 +274,11 @@ How long after a grade is posted does a student have time to appeal?
 
 | # | Criterion | Verdict | How I decided |
 |---|---|---|---|
-| 1 |  |  |  |
-| 2 |  |  |  |
-| 3 |  |  |  |
-| 4 |  |  |  |
-| 5 |  |  |  |
+| 1 | Retrieved chunks contain the answer | Missed | The goal was 4/5 but each run only had 3/5 |
+| 2 | Every answer names a source | Met | 5/5  answers cite a source document |
+| 3 | The relevance gate stops out-of-corpus questions | Met | 5/5 out of scope questions were refused |
+| 4 | No chunk is over 400 characters | Met | No chunk was over 400 characters |
+| 5 | Each response should take no longer than 5 seconds. | Met | No pass took over 5 seconds |
 
 ## Diagnoses
 
