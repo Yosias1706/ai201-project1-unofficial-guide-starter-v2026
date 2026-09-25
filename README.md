@@ -107,6 +107,11 @@ I used AI to help write the chunking functon from my notes, it ruined the curren
 **2.**
 I asked AI to help me come up with a testable creative criteria.
 
+**3.**
+I use AI to help me write the scorer.py file to test for all the criteria and output the results in the log file format.
+
+**4.**
+I used AI to evaluate the reason for criteria 1 failing and to see if there were any solutions to be found without editing questions.py.
 ---
 
 # Unit 2
@@ -304,11 +309,11 @@ How long after a grade is posted does a student have time to appeal?
 ## The Improvement
 
 **What I changed:**
+Nothing
 
 **Why I picked it:**
 
-<!-- Connect it to a specific diagnosis above in one sentence. If you can't,
-     you picked a fix because it sounded impressive. -->
+The problem isnt a chunking problem its a logic problem, there is an expectation that the exact answer is present in the chunk which doesn't work for arithmetically found answers EX: total cost of washing and drying is 3.00 because washe costs 1.50 and dryer costs 1.50. I consulted claude and there is no solution to be found by altering any stage of the pipeline system, the root issue was the criteria and answer defintion. 
 
 ### Run Log — After
 
@@ -317,14 +322,14 @@ How long after a grade is posted does a student have time to appeal?
 
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
-
+| 1. Retrieved chunk contains the answer | 4 of 5 | 3/5 | 3/5 | 3/5 | MISSED |
+| 2. Every answer names a source | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 3. Gate stops out-of-corpus questions | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 4. No chunk is over 400 characters | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 5. Each response takes under 5 seconds | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
 **Did it help?**
 
+It did not help because i didn't change anything, my only miss was on criteria 1, for two specific cases where arithmetic was used to get the answer.
 <!-- Say plainly whether it did, and how you know. If it made things worse,
      say that — a change that backfired, honestly reported, earns full credit
      and is more interesting than one that worked. What matters is that you can
@@ -341,6 +346,7 @@ How long after a grade is posted does a student have time to appeal?
      not.
 
      Milestone 5. -->
+Criteria 1 will fail for any question where the answer is drawn by inference from a present base knowlegde like using arithmetic to calculate using given values or prices.
 
 ## What I'd Do Differently
 
@@ -348,3 +354,4 @@ How long after a grade is posted does a student have time to appeal?
      differently, and why?
 
      Milestone 5. -->
+I would rewrite criteria 1 to not explicity look for the answer in the source text because sometimes source text has enough information to give the answer without the exact answer.
